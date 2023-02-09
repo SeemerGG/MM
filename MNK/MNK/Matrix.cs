@@ -91,7 +91,7 @@ namespace MNK
             return new Matrix(ans);
         }
 
-        private Matrix getMinor(int row, int column)
+        public Matrix GetMinor(int row, int column)
         {
             if (Row != Col) throw new ArgumentException("Matrix should be square!");
             double[,] minor = new double[Row - 1, Col - 1];
@@ -122,7 +122,7 @@ namespace MNK
 
             if (length > 2)
                 for (int i = 0; i < m.Col; i++)
-                    det += Math.Pow(-1, 0 + i) * m.Args[0, i] * Determ(m.getMinor(0, i));
+                    det += Math.Pow(-1, 0 + i) * m.Args[0, i] * Determ(m.GetMinor(0, i));
 
             return det;
         }
@@ -133,7 +133,7 @@ namespace MNK
 
             for (int i = 0; i < Row; i++)
                 for (int j = 0; j < Col; j++)
-                    ans[i, j] = Math.Pow(-1, i + j) * Determ(this.getMinor(i, j));
+                    ans[i, j] = Math.Pow(-1, i + j) * Determ(this.GetMinor(i, j));
 
             return new Matrix(ans);
         }
