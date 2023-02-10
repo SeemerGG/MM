@@ -1,33 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Forms.Design;
+using ZedGraph;
 
 namespace MNK
 {
     public class LSM
     {
-        // Массивы значений Х и У задаются как свойства
-        public double[] x { get; set; }
-        public double[] y { get; set; }
+        
+        public double[] x;
+        public double[] y;
+        public double step;
+        public double end;
+        public double[] coefL, coefP, coefE, coefQ;
 
-        // Конструктор класса. Примает 2 массива значений х и у
-        // Длина массивов должна быть одинакова, иначе нужно обработать исключение
         public LSM(double[] x, double[] y)
         {
             if (x.Length != y.Length) throw new ArgumentException("X and Y arrays should be equal!");
-            x = new double[x.Length];
-            y = new double[y.Length];
+            this.y = y;
+            this.x = x;
+        }
 
-            for (int i = 0; i < x.Length; i++)
-            {
-                x[i] = x[i];
-                y[i] = y[i];
-            }
+        public void Linear()
+        {
+            const int n = 2;
+
+
+
+           // Matrix matr = new Matrix(x, y);
+            double[,] basic = CreateBasic(x, y, n);
+
+            //for (int i = 0; i < n; i++)
+            //{
+            //    basic[0, 0] += Math.Pow(x[i], 2);
+            //    basic[0, 1] += x[i];
+            //    basic[0, 2] += x[i] * y[i];
+            //    basic[1, 0] += x[i];
+            //    basic[1, 2] += y[i];
+            //}
+            //basic[1, 1] = x.Length;
+
+            double determ, determ1, determ2;
+            (determ, determ1, determ2) = Determ(basic);
+
+            double a = determ1 / determ;
+            double b = determ2 / determ;
+
+            return (a, b);
         }
 
         private (double, double, double) Determ(double[,] basic)
@@ -41,7 +66,7 @@ namespace MNK
         
         private double[,] CreateBasic(double[] x, double[] y, int n)
         {
-            double[,] basic = new double[n, n++];
+            double[,] basic = new double[n, n+1];
 
             for (int i = 0; i < n; i++)
             {
@@ -133,10 +158,10 @@ namespace MNK
         {
             int n = 3;
             double[] coef = new double[3];
-            double[,] basic = new double[n, n++];
-            double [] determ = new double[n++];
+            double[,] basic = new double[n+1, n+1];
+            double [] determ = new double[n+1];
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n-1; i++)
             {
                 basic[0, 0] += Math.Pow(x[i], 4);
                 basic[0, 1] += Math.Pow(x[i], 3);
@@ -153,9 +178,12 @@ namespace MNK
                 
             basic[2, 2] = x.Length;
 
+
+            
+
             Matrix matrix = new Matrix(basic);
 
-            for(int i = 1; i < n++; i++)
+            for(int i = 1; i < n+1; i++)
             {
                 determ[i] = Matrix.Determ(matrix.GetMinor(0, i));
             }

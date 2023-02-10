@@ -111,6 +111,21 @@ namespace MNK
             return new Matrix(minor);
         }
 
+        public Matrix GetMMinore(int colomn)
+        {
+            double[,] min = new double[Row, Col-1];
+            for(int i =0;i< this.Row; i++)
+                for(int j = 0; j < this.Col; j++)
+                {
+                    if(j!=colomn)
+                    {
+                        if(j > colomn) min[i, j-1] = this.Args[i, j];
+                        else min[i, j] = this.Args[i, j];
+                    }
+                }
+            return new Matrix(min);
+        }
+
         public static double Determ(Matrix m)
         {
             if (m.Row != m.Col) throw new ArgumentException("Matrix should be square!");
