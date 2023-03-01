@@ -110,7 +110,7 @@
             // 
             this.numericUpDown1.Location = new System.Drawing.Point(36, 471);
             this.numericUpDown1.Maximum = new decimal(new int[] {
-            5000,
+            1000000,
             0,
             0,
             0});
@@ -141,7 +141,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.zedGraphControl1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Метод Монте-Карло";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

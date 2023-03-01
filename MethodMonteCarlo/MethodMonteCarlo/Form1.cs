@@ -7,12 +7,13 @@ namespace MethodMonteCarlo
         public Form1()
         {
             InitializeComponent();
+            
         }
 
         double FTaskOne(double x)
         {
             int n = 7;//номер варианта
-            if(x > 0 && x < n)
+            if(x > 0 && x <= n)
             {
                 return 10 * x / n;
             }
@@ -40,33 +41,23 @@ namespace MethodMonteCarlo
 
 
 
-        //p(f) = sqrt(18 * cos(f)^2 + 4 * sin(f)^2
-        private double P(double u)
-        {
-            return Math.Sqrt(18 * Math.Pow(Math.Cos(u), 2) + 4 * Math.Pow(Math.Sin(u), 2));
-        }
-        private double Fx4(double u)
-        {
-            return Math.Sqrt(18 * Math.Pow(Math.Cos(u), 2) + 4 * Math.Pow(Math.Sin(u), 2)) * Math.Cos(u);
-        }
-        private double Fy4(double u)
-        {
-            return Math.Sqrt(18 * Math.Pow(Math.Cos(u), 2) + 4 * Math.Pow(Math.Sin(u), 2)) * Math.Cos(u) * Math.Sin(u);
-        }
+       
 
         void Task(int N,Func<double, double> func,double s0, double a, double step = 0.1)
         {
             int n = Convert.ToInt32(a / step);
             double b;
             int M = 0;
-            double s, m, d;
+            double s;
             double del, absDel;
             PointPairList points = new PointPairList();
             PointPairList randPoints = new PointPairList();
+            PointPairList randPointsIn = new PointPairList();
+            PointPairList randPointsOut = new PointPairList();
             String answer;
 
-            //вычисление б
-            for (double x = 0; x <= a + 0.1; x += step)
+            //вычисление
+            for (double x = 0; x <= a; x = Math.Round(step + x, 2)) //x = Math.Round(step+x, 1)
             {
                 points.Add(x, func(x)); //может быть вместо u должно быть n
             }
@@ -82,6 +73,11 @@ namespace MethodMonteCarlo
                 if (func(point.X) > point.Y)
                 {
                     M++;
+                    randPointsIn.Add(point);
+                }
+                else
+                {
+                    randPointsOut.Add(point);
                 }
             }
 
@@ -91,30 +87,31 @@ namespace MethodMonteCarlo
             absDel = Math.Abs(s - s0);
             del = absDel * 100 / s0;
 
-            //дисперсия и мат. ожидание
-            m = a / 2;
-            d = Math.Pow(a, 2) / 12;
+            answer = String.Format("Количество точек всего N = {0} внутри фигуры M = {1}\n Площадь фигуры по методу Монте-Карло S = {2}\n" +
+                " Площадь фигуры S0 = {3}\n Абсолютная погрешность равна {4}, относительная {5}%",N, M, Math.Round(s, 2), Math.Round(s0, 2), Math.Round(absDel, 2), Math.Round(del, 2));
 
-            //Вывод параметров
-            answer = String.Format("Количество точек всего N = {6} внутри фигуры M = {7}\n Дисперсия D(X) = {0}\n" +
-                " Математическое ожидание M(X) = {1}\n Площадь фигуры по методу Монте-Карло S = {2}\n" +
-                " Площадь фигуры S0 = {3}\n Абсолютная погрешность равна {4}, относительная {5}%",
-                Math.Round(d, 2), Math.Round(m, 2), Math.Round(s, 2), Math.Round(s0, 2), Math.Round(absDel, 2), Math.Round(del, 2), N, M);
-
-            Draw(points, randPoints, answer);
+            Draw(points, randPointsOut, randPointsIn, answer);
         }
 
-        void Draw(PointPairList figure, PointPairList randPoints, String answer)
+        void Draw(PointPairList figure, PointPairList randPointsOut, PointPairList randPointIn, String answer)
         {
             GraphPane pane = zedGraphControl1.GraphPane;
-            pane.CurveList.Clear(); 
+            pane.CurveList.Clear();
+            pane.Title.Text = "Метод Монте-Карло";
 
             LineItem figureLine = pane.AddCurve("", figure, Color.Black, SymbolType.None);
-            LineItem randPointsLine = pane.AddCurve("Рандомные точки", randPoints, Color.DarkRed, SymbolType.Diamond);
+            LineItem randPointsLineOut = pane.AddCurve("", randPointsOut, Color.DarkRed, SymbolType.Diamond);
+            LineItem randPointsLineIn = pane.AddCurve("", randPointIn, Color.Green, SymbolType.Diamond);
 
-            randPointsLine.Line.IsVisible = false;
-            randPointsLine.Symbol.Fill.Type = FillType.Solid;
-            randPointsLine.Symbol.Size = 5;
+            randPointsLineOut.Line.IsVisible = false;
+            randPointsLineOut.Symbol.Fill.Type = FillType.Solid;
+            randPointsLineOut.Symbol.Size = 5;
+
+            randPointsLineIn.Line.IsVisible = false;
+            randPointsLineIn.Symbol.Fill.Type = FillType.Solid;
+            randPointsLineIn.Symbol.Size = 5;
+
+            figureLine.Line.Width = 2;
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
@@ -132,15 +129,17 @@ namespace MethodMonteCarlo
         {
             double b;
             int M = 0;
-            double s, m, d;
+            double s;
             double del, absDel;
             PointPairList points = new PointPairList();
             PointPairList randPoints = new PointPairList();
+            PointPairList randPointsIn = new PointPairList();
+            PointPairList randPointsOut = new PointPairList();
             String answer;
 
             b = a;
 
-            //строию окружность
+            //строю окружность
             for(int i = 0; i <= 360; i++)
             {
                 points.Add(func1(i), func2(i));
@@ -156,6 +155,11 @@ namespace MethodMonteCarlo
                 if (Math.Pow(point.X - 7, 2) + Math.Pow(point.Y - 7, 2) <= Math.Pow(a/2, 2))
                 {
                     M++;
+                    randPointsIn.Add(point);
+                }
+                else
+                {
+                    randPointsOut.Add(point);
                 }
             }
 
@@ -164,36 +168,48 @@ namespace MethodMonteCarlo
             absDel = Math.Abs(s - s0);
             del = absDel * 100 / s0;
 
-            //дисперсия и мат. ожидание
-            m = a / 2;
-            d = Math.Pow(a, 2) / 12;
-
             //Вывод параметров
-            answer = String.Format("Количество точек всего N = {6} внутри фигуры M = {7}\n Дисперсия D(X) = {0}\n" +
-                " Математическое ожидание M(X) = {1}\n Площадь фигуры по методу Монте-Карло S = {2}\n" +
-                " Площадь фигуры S0 = {3}\n Абсолютная погрешность равна {4}, относительная {5}%",
-                Math.Round(d, 2), Math.Round(m, 2), Math.Round(s, 2), Math.Round(s0, 2), Math.Round(absDel, 2), Math.Round(del, 2), N, M);
+            answer = String.Format("Количество точек всего N = {0} внутри фигуры M = {1}\n Площадь фигуры по методу Монте-Карло S = {2}\n" +
+                 " Площадь фигуры S0 = {3}\n Абсолютная погрешность равна {4}, относительная {5}%", N, M, Math.Round(s, 2), Math.Round(s0, 2), Math.Round(absDel, 2), Math.Round(del, 2));
 
-            Draw(points, randPoints, answer);
+            Draw(points, randPointsOut, randPointsIn, answer);
         }
 
         static double Fi(double x, double y)
         {
-            if (x > 0) return Math.PI / 2 - Math.Atan(x / y);
-            if (x < 0) return Math.PI + (Math.PI / 2 - Math.Atan(y / x));
-            if (x == 0 && y > 0) return Math.PI / 2;
-            if (x == 0 && y < 0) return Math.PI / 2 * (-1);
+            if (x > 0) return Math.PI - Math.Atan(y / x);
+            else if (x < 0) return Math.PI + (Math.PI - Math.Atan(y / x));
+            else if (x == 0 && y > 0) return Math.PI / 2;
+            else if (x == 0 && y < 0) return Math.PI / 2 * (-1);
             else return 0;
+        }
+
+        //p(f) = sqrt(18 * cos(f)^2 + 4 * sin(f)^2
+        private double P(double u)
+        {
+            return Math.Sqrt(18 * Math.Pow(Math.Cos(u), 2) + 4 * Math.Pow(Math.Sin(u), 2));
+        }
+
+        private double Fx4(double u)
+        {
+            return P(u) * Math.Cos(u);
+        }
+
+        private double Fy4(double u)
+        {
+            return P(u) * Math.Sin(u);
         }
 
         void Task4(int N, Func<double, double> func1, Func<double, double> func2, double s0 = Math.PI * 11)
         {
             double b, a;
             int M = 0;
-            double s, m, d;
+            double s;
             double del, absDel;
             PointPairList points = new PointPairList();
             PointPairList randPoints = new PointPairList();
+            PointPairList randPointsIn = new PointPairList();
+            PointPairList randPointsOut = new PointPairList();
             String answer;
 
             //строим
@@ -205,7 +221,6 @@ namespace MethodMonteCarlo
             b = points.Max(p => p.Y);
 
             //генериурую точки 
-            //randPoints = GenerateRandPoint(a, b, N);
             Random rand = new Random();
             for (int i = 0; i <= N; i++)
             {
@@ -221,6 +236,11 @@ namespace MethodMonteCarlo
                 if(r < P(fi))
                 {
                     M++;
+                    randPointsIn.Add(point);
+                }
+                else
+                {
+                    randPointsOut.Add(point);
                 }
             }
 
@@ -230,17 +250,11 @@ namespace MethodMonteCarlo
             absDel = Math.Abs(s - s0);
             del = absDel * 100 / s0;
 
-            //дисперсия и мат. ожидание
-            m = a / 2;
-            d = Math.Pow(a, 2) / 12;
-
             //Вывод параметров
-            answer = String.Format("Количество точек всего N = {6} внутри фигуры M = {7}\n Дисперсия D(X) = {0}\n" +
-                " Математическое ожидание M(X) = {1}\n Площадь фигуры по методу Монте-Карло S = {2}\n" +
-                " Площадь фигуры S0 = {3}\n Абсолютная погрешность равна {4}, относительная {5}%",
-                Math.Round(d, 2), Math.Round(m, 2), Math.Round(s, 2), Math.Round(s0, 2), Math.Round(absDel, 2), Math.Round(del, 2), N, M);
+            answer = String.Format("Количество точек всего N = {0} внутри фигуры M = {1}\n Площадь фигуры по методу Монте-Карло S = {2}\n" +
+                 " Площадь фигуры S0 = {3}\n Абсолютная погрешность равна {4}, относительная {5}%", N, M, Math.Round(s, 2), Math.Round(s0, 2), Math.Round(absDel, 2), Math.Round(del, 2));
 
-            Draw(points, randPoints, answer);
+            Draw(points, randPointsOut, randPointsIn, answer);
         }
 
         PointPairList GenerateRandPoint(double a, double b, int N)
@@ -256,7 +270,7 @@ namespace MethodMonteCarlo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Task(Convert.ToInt32(numericUpDown1.Value),FTaskOne, 100, 20);
+            Task(Convert.ToInt32(numericUpDown1.Value),FTaskOne, 100, 20.0);
         }
 
         private void button2_Click(object sender, EventArgs e)
