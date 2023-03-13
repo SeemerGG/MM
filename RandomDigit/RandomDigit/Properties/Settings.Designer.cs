@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MNK.Properties
+namespace RandomDigit.Properties
 {
 
 
