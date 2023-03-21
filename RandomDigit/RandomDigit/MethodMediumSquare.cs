@@ -9,9 +9,9 @@ namespace RandomDigit
 {
     internal class MethodMediumSquare : MethodsOfGeneration 
     {
-        private int _r0; 
+        private ulong _r0; 
 
-        public MethodMediumSquare(int r0)
+        public MethodMediumSquare(ulong r0)
         {
             _r0 = r0;
         }
@@ -20,13 +20,19 @@ namespace RandomDigit
         {
             try
             {
-                int square = Convert.ToInt32(Math.Pow(_r0, 2));
-                string str = Convert.ToString(square);
-                _r0 = Convert.ToInt32(str.Substring(str.Length / 2 , 4));
+                string str = Convert.ToString(Math.Pow(_r0, 2));
+                _r0 = Convert.ToUInt64(str.Substring(str.Length / 2 - 1, 4));
                 return _r0 * 0.0001;
+                
+
             }
             catch (Exception e)
             {
+                if(_r0%10000 == 0)
+                {
+                    _r0 = (uint)Math.Pow(_r0, 2);
+                    Generate();
+                }
                 MessageBox.Show(e.Message);
                 return 0;
             }

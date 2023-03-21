@@ -7,39 +7,66 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ZedGraph;
 
 namespace RandomDigit
 {
     public partial class Form1 : Form
     {
-        int r0, M, k, b, N, countDigit;
+<<<<<<< HEAD
+        ulong r0, M, k, b;
+        int N, countDigit;
 
+=======
+>>>>>>> parent of 67b3e7c (Не успел)
         public Form1()
         {
             InitializeComponent();
+            string str = "";
+            for (int i = 0; i < 10; i++)
+                str += Convert.ToString(()) + " ";
 
+            textBox1.Text = str;
         }
-
-        private void button2_Click(object sender, EventArgs e)
+        int mainDigitForMed = 9876;
+        int R0ForMedMut = 9876;
+        int R1ForMedMut = 6789;
+        int R0ForMix = 657945;
+        //метод серединных квадратов
+        double MediumSquare()
         {
-
+            string buf = Convert.ToString(Math.Pow(mainDigitForMed, 2));
+            mainDigitForMed = Convert.ToInt32(buf.Substring(buf.Length / 2, 4));
+            return mainDigitForMed * 0.0001;
         }
-
-        private void button4_Click(object sender, EventArgs e)
+        //метод серединных произведений 
+        double MediumMultipl()
         {
-
+            string buf = Convert.ToString(R0ForMedMut*R1ForMedMut);
+            int buf2 = Convert.ToInt32(buf.Substring(buf.Length / 2, 4));
+            R0ForMedMut = R1ForMedMut;
+            R1ForMedMut = buf2;
+            return R1ForMedMut * 0.0001; 
         }
-
-        private void button1_Click(object sender, EventArgs e)
+        //Метод перемешивания
+        double Mix()
         {
-            GetParametr();
-            MethodMediumSquare obj = new MethodMediumSquare(r0);
-            Draw(obj.Generate(countDigit));
+            string buf = Convert.ToString(R0ForMix);
+            //сдвиг влево
+            string buf2 = buf.Substring(2, buf.Length - 2) + buf.Substring(0, 2);
+            //сдвиг вправо
+            string buf3 = buf.Substring(0, buf.Length - 2) + buf.Substring(buf.Length - 3, 2);
+            buf = Convert.ToString(Convert.ToInt32(buf2) + Convert.ToInt32(buf3));
+            R0ForMix = Convert.ToInt32(buf);
+            return Math.Round(Convert.ToDouble("0," + buf), 4);
         }
-
-        private void button3_Click(object sender, EventArgs e)
+        //Линейный конгруэндный метод
+        int M = Convert.ToInt32(Math.Pow(2, 31)) - 1;
+        int k = 1220703125;
+        int r0 = 7;
+        int b = 7;
+        double Linea()
         {
+<<<<<<< HEAD
 
         }
 
@@ -51,7 +78,7 @@ namespace RandomDigit
         void GetParametr()
         {
             N = Convert.ToInt32(textBox1.Text);
-            r0 = Convert.ToInt32(textBox2.Text);
+            r0 = Convert.ToUInt64(textBox2.Text);
             countDigit = Convert.ToInt32(textBox3.Text);
         }
 
@@ -76,10 +103,10 @@ namespace RandomDigit
             {
                 for (int i = 0; i < N - 1; i++)
                 {
-                    if (r[k] > i * 1 / N && r[k] < (i + 1) * 1 / N)
-                    {
+                     if (r[k] > i * 1 / N && r[k] < (i + 1) * 1 / N)
+                     {
                         values[i] += 1;
-                    }
+                     }
                 }
             }
 
@@ -96,6 +123,10 @@ namespace RandomDigit
             label.Text = String.Format("Матиматическое ожидание: {0:f4}, Дисперсия: {1:f4}", GetMathWait(r), GetDisp(r, GetMathWait(r)));
             groupBox1.Controls.Clear();
             groupBox1.Controls.Add(label);
+=======
+            r0 = k * r0 + b % M;
+            return r0;
+>>>>>>> parent of 67b3e7c (Не успел)
         }
     }
 }
