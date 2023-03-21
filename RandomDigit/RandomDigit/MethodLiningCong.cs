@@ -7,24 +7,26 @@ using System.Windows.Forms;
 
 namespace RandomDigit
 {
-    internal class MethodMediumSquare : MethodsOfGeneration 
+    internal class MethodLiningCong : MethodsOfGeneration
     {
-        private uint _r0; 
+        private uint _M, _k, _b, _r0;
 
-        public MethodMediumSquare(uint r0)
+        public MethodLiningCong(uint M, uint k, uint b, uint r0)
         {
-            _r0 = r0 % 10000;
+            _M = M;
+            _k = k;
+            _b = b;
+            _r0 = r0;
         }
 
         public override double Generate()
         {
             try
             {
-                _r0 = Convert.ToUInt32(Math.Pow(_r0, 2) / 100.0) % 10000;
-                return _r0 * 0.0001;
+                _r0 = (_k * _r0 + _b) % _M;
+                return _r0 / (double)_M;
             }
-            catch (Exception e)
-
+            catch(Exception e)
             {
                 MessageBox.Show(e.Message);
                 return 0;

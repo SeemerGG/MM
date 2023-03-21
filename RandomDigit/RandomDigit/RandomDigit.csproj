@@ -55,6 +55,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="MethodLiningCong.cs" />
+    <Compile Include="MethodMediumMultipl.cs" />
+    <Compile Include="MethodMediumSquare.cs" />
+    <Compile Include="MethodMixed.cs" />
+    <Compile Include="MethodsOfGeneration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
