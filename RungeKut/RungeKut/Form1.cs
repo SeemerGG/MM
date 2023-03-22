@@ -72,7 +72,7 @@ namespace RungeKut
         public Form1()
         {
             InitializeComponent();
-            
+            textBox1.Text = "50";
         }
 
         public void SolveAndShow(int n, bool flag)
@@ -80,13 +80,14 @@ namespace RungeKut
             func2 f_x, f_y;
             func1 x_s, y_s;
             double x0, y0;
+
             if(flag)
             {
                 (f_x, f_y, x_s, y_s, x0, y0) = get_test1();
             }
             else
             {
-                (f_x, f_y, x_s, y_s, x0, y0) = get_test1();
+                (f_x, f_y, x_s, y_s, x0, y0) = get_test2();
             }
             
             Range r = new Range(0, 1);
@@ -109,23 +110,12 @@ namespace RungeKut
 
             LineItem line1 = pane.AddCurve("Точное решение", points, Color.BlueViolet, SymbolType.None);
             LineItem line2 = pane.AddCurve("Приблеженное решение", s, Color.Green, SymbolType.None);
-
+            line2.Line.Width = 3;
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
         }
-        //private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        //{
-            
-        //    if(radioButton1.Checked)
-        //    {
-        //        SolveAndShow(n, true);
-        //    }
-        //    if(radioButton2.Checked)
-        //    {
-        //        SolveAndShow(n, false);
-        //    }
-        //}
+        
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {

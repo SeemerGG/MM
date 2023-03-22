@@ -18,7 +18,7 @@ namespace RungeKut
             double h = t_range.Diff / n;
 
             x.Add(x0);
-            y.Add(x0);
+            y.Add(y0);
 
             for (int k = 0; k < n; k++)
             {
