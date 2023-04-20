@@ -50,4 +50,8 @@ void SimulationStanochek(int countTask)
     Console.WriteLine(String.Format("Общее время простоя: {0}", Math.Round(totalDownTime,2)));
 }
 
+//Random rnd = new Random();
+//for (int i = 0; i < 1000; i++)
+    //Console.WriteLine(Math.Round(1 - rnd.GetNextExponentialDistrubutedNumber(0, 1), 2));
+    //Console.WriteLine(Math.Round(Math.Abs(rnd.GetNextExponentialDistrubutedNumber(2, 1)), 2));
 SimulationStanochek(500);
