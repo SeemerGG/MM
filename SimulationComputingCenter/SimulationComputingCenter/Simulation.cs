@@ -13,7 +13,8 @@ namespace SimulationComputingCenter
         double ErrProbility;
 
         int totalTimeWorking = 0, operatorDownTime = 0, EMC1DownTime = 0, EMC2DownTime = 0, totalTimeComputingEMC1 = 0, totalTimeComputingEMC2 = 0;
-        int timeWorkingOperator = 0, totalSortTime = 0, totalTimeCorrectionErr = 0, countErr = 0;
+        int timeWorkingOperator = 0, totalSortTime = 0, totalTimeCorrectionErr = 0, countErr = 0, countTaskInQue = 0;
+        
 
 
         public Simulation(int countTask, int timeToNextTask, int timeSort, int timeComputing, int timeErrCorection, double ErrProbility)
@@ -50,9 +51,12 @@ namespace SimulationComputingCenter
 
             do
             {
-                if (timeBeforNextTask == 0 && countIncomingTasks < this.countTask)
+                if (timeBeforNextTask == 0)
                 {
-                    countTaskInQue++;
+                    if (countIncomingTasks < this.countTask)
+                    {
+                        countTaskInQue++;
+                    }
                     countIncomingTasks++;
                     timeBeforNextTask = this.timeToNextTask;
                 }
@@ -222,6 +226,7 @@ namespace SimulationComputingCenter
             this.timeWorkingOperator = this.totalTimeCorrectionErr + this.totalSortTime;
             this.operatorDownTime = this.totalTimeWorking - this.timeWorkingOperator;
             this.countErr = this.totalTimeCorrectionErr / this.timeErrCorection;
+            this.countTaskInQue = countIncomingTasks - this.countTask;
         }
 
         public string GetStringInfo()
@@ -230,7 +235,8 @@ namespace SimulationComputingCenter
                 + $"Время простоя ЭВМ1: {this.EMC1DownTime} минут\nВремя работы ЭВМ2: {this.totalTimeComputingEMC2} минут\nВремя простоя ЭВМ2: {this.EMC2DownTime}\n"
                 + $"Время работы оператора: {this.timeWorkingOperator} минут\nВремя коррекции ошибок оператором: {this.totalTimeCorrectionErr} минут\n"
                 + $"Время регистрации и сортировки задач оператором: {this.totalSortTime} минут\nВремя ожидания оператором задач: {this.operatorDownTime} минут\n"
-                + $"Количество ошибок при регистрации и сортировке: {this.countErr} штук\n";
+                + $"Количество ошибок при регистрации и сортировке: {this.countErr} штук\nКоличество заданий в очереди: {this.countTaskInQue} штук\n"
+                + $"Пропускная способность: {Math.Round(this.countTask * 1.0 / this.totalTimeWorking, 2)} задач/минута\n";
             return info;
         }
     }

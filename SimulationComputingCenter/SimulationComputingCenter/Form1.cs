@@ -19,6 +19,7 @@ namespace SimulationComputingCenter
 
         private void button1_Click(object sender, EventArgs e)
         {
+            groupBox2.Controls.Clear();
             int timeToNextTask = Convert.ToInt32(textBox1.Text);
             int timeSort = Convert.ToInt32(textBox2.Text);
             int timeErrCorrection = Convert.ToInt32(textBox3.Text);
