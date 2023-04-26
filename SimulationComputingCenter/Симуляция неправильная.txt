@@ -1,0 +1,194 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SimulationComputingCenter
+{
+    public class Simulation
+    {
+        int countTask, timeToNextTask, timeSort, timeComputing, timeErrCorection;
+        double ErrProbility;
+
+        int totalTimeWorking = 0, operatorDownTime = 0, EMC1DownTime = 0, EMC2DownTime = 0, totalTimeComputingEMC1 = 0, totalTimeComputingEMC2 = 0;
+        int timeWorkingOperator = 0, totalSortTime = 0, totalTimeCorrectionErr = 0, countErr = 0;
+        
+
+        public Simulation(int countTask, int timeToNextTask, int timeSort, int timeComputing, int timeErrCorection, double ErrProbility)
+        {
+            this.countTask = countTask;
+            this.ErrProbility = ErrProbility;
+            this.timeSort = timeSort;
+            this.timeComputing = timeComputing;
+            this.timeErrCorection = timeErrCorection;
+            this.timeToNextTask = timeToNextTask;
+            Simulate();
+        }
+
+        
+        void Simulate()
+        {
+            Random rnd = new Random();
+            int countExecuteTask = 0;
+            int timeBeforNextTask = 2;
+            int countTaskInQue = 0; //очередь на обработку оператором
+            int timeSorting = 0;
+            bool operatorRepairErr = false; //оператор исправляет ошибки
+            bool operatorSorting = false; //оператор сортирует задачи
+            int timeComputingInECM1 = 0;
+            int timeComputingInECM2 = 0;
+            int countTaskInQueECM1 = 0;
+            int countTaskInQueECM2 = 0;
+            bool EMC1Working = false;
+            bool EMC2Working = false;
+            int countIncomingTasks = 0;
+            do
+            {
+                if (timeBeforNextTask == 0 && countIncomingTasks < this.countTask)
+                {
+                    countTaskInQue++;
+                    timeBeforNextTask = this.timeToNextTask;
+                }
+
+
+
+
+
+
+                // Неверное решиние
+                if (timeSorting == 0 && operatorSorting) //оператор закончил первичную обработку задачи
+                {
+                    this.totalSortTime += this.timeSort;
+
+                    if (rnd.NextBool(this.ErrProbility))// ошибка возникла? оператор производит редактирование
+                    {
+                        timeSorting = this.timeErrCorection;
+                        operatorRepairErr = true;
+                        operatorSorting = false;
+                    }
+                    else //ошибка не возникла ставим на очередь эвм новую задачу
+                    {
+                        if (countTaskInQueECM1 < countTaskInQueECM2)
+                        {
+                            countTaskInQueECM1++;
+                        }
+                        else
+                        {
+                            countTaskInQueECM2++;
+                        }
+                        if (countTaskInQue > 0) //есть задачи на обработку оператор их начинает делать
+                        {
+                            timeSorting = this.timeSort;
+                            operatorSorting = true;
+                        }
+                        else
+                        {
+                            operatorSorting = false;
+                        }
+                    }
+
+                }
+
+                if (timeSorting == 0 && operatorRepairErr)
+                {
+                    this.totalTimeCorrectionErr += this.timeErrCorection;
+                    if (countTaskInQueECM1 < countTaskInQueECM2)
+                    {
+                        countTaskInQueECM1++;
+                    }
+                    else
+                    {
+                        countTaskInQueECM2++;
+                    }
+                    if (countTaskInQue > 0) //есть задачи на обработку оператор их начинает делать
+                    {
+                        timeSorting = this.timeSort;
+                        operatorSorting = true;
+                        operatorRepairErr = false;
+                    }
+                    else
+                    {
+                        operatorRepairErr = false;
+                    }
+                }
+                //// Неверное решиние выше
+                
+                if(countTaskInQue > 0 && !operatorSorting && !operatorRepairErr)//начинает работать оператор
+                {
+                    timeSorting = this.timeSort;
+                    operatorSorting = true;
+                }
+
+                if (timeComputingInECM1 == 0 && EMC1Working) //вычислила задачу первая машина 
+                {
+                    countExecuteTask++;
+                    EMC1Working = false;
+                    this.totalTimeComputingEMC1 += this.timeComputing;
+                }
+
+                if (timeComputingInECM2 == 0 && EMC2Working) // вычислила задачу вторая машина
+                {
+                    countExecuteTask++;
+                    EMC2Working = false;
+                    this.totalTimeComputingEMC2 += this.timeComputing;
+                }
+
+                if (countTaskInQueECM1 > 0 && !EMC1Working) // машина не работает - пусть работает
+                {
+                    countTaskInQueECM1--;
+                    timeComputingInECM1 = this.timeComputing;
+                    EMC1Working = true;
+                }
+                if (countTaskInQueECM2 > 0 && !EMC2Working)// ты тоже работай
+                {
+                    countTaskInQueECM2--;
+                    timeComputingInECM2 = this.timeComputing;
+                    EMC2Working = true;
+                }
+
+                if (countExecuteTask == countTask)
+                {
+                    break;
+                }
+
+                totalTimeWorking++;
+
+                
+                timeBeforNextTask--;
+
+                if (operatorRepairErr || operatorSorting)
+                {
+                    timeSorting--;
+                }
+
+                if (EMC1Working)
+                {
+                    timeComputingInECM1--;
+                }
+
+                if (EMC2Working)
+                {
+                    timeComputingInECM2--;
+                }
+
+            } while (true);
+
+            this.EMC1DownTime = this.totalTimeWorking - this.totalTimeComputingEMC1;
+            this.EMC2DownTime = this.totalTimeWorking - this.totalTimeComputingEMC2;
+            this.timeWorkingOperator = this.totalTimeCorrectionErr + this.totalSortTime;
+            this.operatorDownTime = this.totalTimeWorking - this.timeWorkingOperator;
+            this.countErr = this.totalTimeCorrectionErr / this.timeErrCorection;
+        }
+
+        public string GetStringInfo()
+        {
+            string info = $"Общее время работы: {this.totalTimeWorking}\nВремя работы ЭВМ1: {this.totalTimeComputingEMC1}\n"
+                + $"Время простоя ЭВМ1: {this.EMC1DownTime}\nВремя работы ЭВМ2: {this.EMC2DownTime}\nВремя простоя ЭВМ2: {this.EMC2DownTime}\n"
+                + $"Время работы оператора: {this.timeWorkingOperator} \nВремя коррекции ошибок оператором: {this.totalTimeCorrectionErr}\n"
+                + $"Время регистрации и сортировки задач оператором: {this.totalSortTime}\nВремя ожидания оператором задач: {this.operatorDownTime}\n"
+                + $"Количество ошибок при регистрации и сортировке: {this.countErr}\n";
+            return info;
+        }
+    }
+}
