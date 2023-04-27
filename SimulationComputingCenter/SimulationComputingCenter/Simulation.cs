@@ -14,6 +14,7 @@ namespace SimulationComputingCenter
 
         int totalTimeWorking = 0, operatorDownTime = 0, EMC1DownTime = 0, EMC2DownTime = 0, totalTimeComputingEMC1 = 0, totalTimeComputingEMC2 = 0;
         int timeWorkingOperator = 0, totalSortTime = 0, totalTimeCorrectionErr = 0, countErr = 0, countTaskInQue = 0;
+        int timeCorrectionErrEMC1 = 0, timeCorrectionErrEMC2 = 0, countTaskComputingInEMC1 = 0, countTaskComputingInEMC2 = 0;
         
 
 
@@ -90,10 +91,14 @@ namespace SimulationComputingCenter
                     if(queErr.First() == 1)
                     {
                         EMC1Working = true;
+                        //Время коррекции ошибок первой машины
+                        this.timeCorrectionErrEMC1 += this.timeErrCorection;
                     }
                     else
                     {
                         EMC2Working = true;
+                        //Время коррекции ошибок второй машины 
+                        this.timeCorrectionErrEMC2 += this.timeErrCorection;
                     }
 
                     queErr.RemoveAt(0);
@@ -125,6 +130,8 @@ namespace SimulationComputingCenter
                             queEMC1.RemoveAt(0);
                             countExecuteTask++;
                             EMC1Working = false;
+                            //Увеличиваем количество задач выполненных на ЭВМ1
+                            this.countTaskComputingInEMC1++;
                         }
                     }
                     else
@@ -134,6 +141,8 @@ namespace SimulationComputingCenter
                             queEMC1.RemoveAt(0);
                             countExecuteTask++;
                             EMC1Working = false;
+                            //Увеличиваем количество задач выполненных на ЭВМ1
+                            this.countTaskComputingInEMC1++;
                         }
                     }
                     
@@ -157,6 +166,8 @@ namespace SimulationComputingCenter
                             queEMC2.RemoveAt(0);
                             countExecuteTask++;
                             EMC2Working = false;
+                            //Увеличиваем количество задач выполненных на ЭВМ2
+                            this.countTaskComputingInEMC2++;
                         }
                     }
                     else
@@ -166,6 +177,8 @@ namespace SimulationComputingCenter
                             queEMC2.RemoveAt(0);
                             countExecuteTask++;
                             EMC2Working = false;
+                            //Увеличиваем количество задач выполненных на ЭВМ2
+                            this.countTaskComputingInEMC2++;
                         }
                     }
                     
@@ -231,12 +244,31 @@ namespace SimulationComputingCenter
 
         public string GetStringInfo()
         {
-            string info = $"Общее время работы: {this.totalTimeWorking} минут\nВремя работы ЭВМ1: {this.totalTimeComputingEMC1} минут\n"
-                + $"Время простоя ЭВМ1: {this.EMC1DownTime} минут\nВремя работы ЭВМ2: {this.totalTimeComputingEMC2} минут\nВремя простоя ЭВМ2: {this.EMC2DownTime}\n"
-                + $"Время работы оператора: {this.timeWorkingOperator} минут\nВремя коррекции ошибок оператором: {this.totalTimeCorrectionErr} минут\n"
-                + $"Время регистрации и сортировки задач оператором: {this.totalSortTime} минут\nВремя ожидания оператором задач: {this.operatorDownTime} минут\n"
-                + $"Количество ошибок при регистрации и сортировке: {this.countErr} штук\nКоличество заданий в очереди: {this.countTaskInQue} штук\n"
-                + $"Пропускная способность: {Math.Round(this.countTask * 1.0 / this.totalTimeWorking, 2)} задач/минута\n";
+            string info = $"Общее время работы: {this.totalTimeWorking} минут\n"
+                + $"Время работы ЭВМ1: {this.totalTimeComputingEMC1} минут\n"
+                //+ $"Время простоя ЭВМ1: {this.EMC1DownTime} минут\n"
+                + $"Время простоя ЭВМ1: {Math.Round(this.EMC1DownTime * 100.0 / this.totalTimeWorking, 2)} %\n"
+                + $"Время работы ЭВМ2: {this.totalTimeComputingEMC2} минут\n"
+                //+ $"Время простоя ЭВМ2: {this.EMC2DownTime}\n"
+                + $"Время простоя ЭВМ2: {Math.Round(this.EMC2DownTime * 100.0 / this.totalTimeWorking, 2)} %\n"
+                + $"Интенсивность нагрузки: {Math.Round(this.countTaskInQue * 1.0 / this.countTask, 2)}\n"
+                + $"Время работы оператора: {this.timeWorkingOperator} минут\n"
+                + $"Время коррекции ошибок оператором: {this.totalTimeCorrectionErr} минут\n"
+                + $"Время регистрации и сортировки задач оператором: {this.totalSortTime} минут\n"
+                //+ $"Время ожидания оператором задач: {this.operatorDownTime} минут\n"
+                //+ $"Количество ошибок при регистрации и сортировке: {this.countErr} штук\n"
+                + $"Количество заданий в очереди: {this.countTaskInQue} штук\n"
+                + $"Пропускная способность: {Math.Round(this.countTask * 1.0 / this.totalTimeWorking, 2)} задач/минута\n"
+                + $"Средние время в очереди: {this.timeSort + Math.Round(this.totalTimeCorrectionErr * 1.0 / this.countTask, 2)} минут\n"
+                //+ $"Вероятность занятости ЭВМ1: {Math.Round(this.totalTimeComputingEMC1 + this.timeCorrectionErrEMC1 * 0.1 / this.totalTimeWorking, 2)}\n"
+                //+ $"Вероятность занятости ЭВМ2: {Math.Round(this.totalTimeComputingEMC2 + this.timeCorrectionErrEMC2 * 0.1 / this.totalTimeWorking, 2)}\n"
+                + $"Количество ошибок обнаруженных ЭВМ1: {this.timeCorrectionErrEMC1 / this.timeErrCorection} штук\n"
+                + $"Количество ошибок обнаруженных ЭВМ2: {this.timeCorrectionErrEMC2 / this.timeErrCorection} штук\n"
+                + $"Количество задач обработаных ЭВМ1: {this.countTaskComputingInEMC1} штук\n"
+                + $"Количество задач обработаных ЭВМ2: {this.countTaskComputingInEMC2} штук\n"
+                + $"Среднее время выполнения задания: \n"
+                + $"Среднее количество задействованых каналов: штук\n"
+                + $"Среднее число заявок в очереди: штук\n";
             return info;
         }
     }

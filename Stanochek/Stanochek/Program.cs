@@ -9,6 +9,7 @@ void SimulationStanochek(int countTask)
     double totalSettingTime = 0;
     double totalDownTime = 0;
     double timeToBreakdown = rnd.GetNextNormalDitributedNumber(20, 2);
+    int countBreakdown = 0;
     
 
     for(int i = 0; i < countTask; i++)
@@ -20,10 +21,11 @@ void SimulationStanochek(int countTask)
             totalWorkingTime += timeRepair;
             totalRepairTime += timeRepair;
 
-            timeToBreakdown =totalWorkingTime + rnd.GetNextNormalDitributedNumber(20, 2);
+            timeToBreakdown =totalWorkingTime + rnd.GetNextNormalDitributedNumber(20, 2);//время до следующей поломки
+            countBreakdown++;
         }
 
-        double timeNextTask = totalWorkingTime + Math.Abs(rnd.GetNextExponentialDistrubutedNumber(1, 0));
+        double timeNextTask = totalWorkingTime + (1 - rnd.GetNextExponentialDistrubutedNumber(0, 1)); //время до следующей задачи //Math.Abs(rnd.GetNextExponentialDistrubutedNumber(1, 0));
 
         double settingTime = 0.2 + rnd.NextDouble() * (0.5 - 0.2);
         totalSettingTime += settingTime;
@@ -44,10 +46,11 @@ void SimulationStanochek(int countTask)
 
     Console.WriteLine(String.Format("Количество выполненых заданий: {0}", countTask));
     Console.WriteLine(String.Format("Общее время работы: {0}", Math.Round(totalWorkingTime, 2)));
-    Console.WriteLine(String.Format("Общее время выполнения заданий: {0}", Math.Round(totalWorkingTime - totalRepairTime - totalSettingTime - totalDownTime, 2)));
-    Console.WriteLine(String.Format("Общее время наладки станка: {0}", Math.Round(totalSettingTime,2)));
+    Console.WriteLine(String.Format("Общее время выполнения заданий: {0}", Math.Round(totalWorkingTime - totalRepairTime - totalDownTime, 2)));
+   // Console.WriteLine(String.Format("Общее время наладки станка: {0}", Math.Round(totalSettingTime,2)));
     Console.WriteLine(String.Format("Общее время ремонта станка: {0}", Math.Round(totalRepairTime,2)));
     Console.WriteLine(String.Format("Общее время простоя: {0}", Math.Round(totalDownTime,2)));
+    Console.WriteLine($"Количество поломок станка: {countBreakdown}");
 }
 
 //Random rnd = new Random();
