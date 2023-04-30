@@ -119,16 +119,16 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(203, 20);
             this.textBox4.TabIndex = 7;
-            this.textBox4.Text = "0,7";
+            this.textBox4.Text = "70";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(7, 185);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(139, 13);
+            this.label4.Size = new System.Drawing.Size(127, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "Вероятность ошибки, мин";
+            this.label4.Text = "Вероятность ошибки, %";
             // 
             // textBox3
             // 

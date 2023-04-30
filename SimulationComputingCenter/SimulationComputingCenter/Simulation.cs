@@ -10,15 +10,16 @@ namespace SimulationComputingCenter
     public class Simulation
     {
         int countTask, timeToNextTask, timeSort, timeComputing, timeErrCorection;
-        double ErrProbility;
+        int ErrProbility;
 
         int totalTimeWorking = 0, operatorDownTime = 0, EMC1DownTime = 0, EMC2DownTime = 0, totalTimeComputingEMC1 = 0, totalTimeComputingEMC2 = 0;
         int timeWorkingOperator = 0, totalSortTime = 0, totalTimeCorrectionErr = 0, countErr = 0, countTaskInQue = 0;
         int timeCorrectionErrEMC1 = 0, timeCorrectionErrEMC2 = 0, countTaskComputingInEMC1 = 0, countTaskComputingInEMC2 = 0;
+        int parallelComputing = 0;
         
 
 
-        public Simulation(int countTask, int timeToNextTask, int timeSort, int timeComputing, int timeErrCorection, double ErrProbility)
+        public Simulation(int countTask, int timeToNextTask, int timeSort, int timeComputing, int timeErrCorection, int ErrProbility)
         {
             this.countTask = countTask;
             this.ErrProbility = ErrProbility;
@@ -74,7 +75,7 @@ namespace SimulationComputingCenter
                 {
                     this.totalSortTime += this.timeSort;
                     operatorSorting = false;
-                    if (queEMC1.Count < queEMC2.Count)
+                    if (queEMC1.Count <= queEMC2.Count)
                     {
                         queEMC1.Add(0);
                     }
@@ -231,6 +232,11 @@ namespace SimulationComputingCenter
                 {
                     timeComputingInECM2--;
                 }
+
+                if (EMC1Working && EMC2Working)
+                {
+                    parallelComputing++;
+                }
                 
             } while (true);
 
@@ -266,9 +272,10 @@ namespace SimulationComputingCenter
                 + $"Количество ошибок обнаруженных ЭВМ2: {this.timeCorrectionErrEMC2 / this.timeErrCorection} штук\n"
                 + $"Количество задач обработаных ЭВМ1: {this.countTaskComputingInEMC1} штук\n"
                 + $"Количество задач обработаных ЭВМ2: {this.countTaskComputingInEMC2} штук\n"
-                + $"Среднее время выполнения задания: \n"
-                + $"Среднее количество задействованых каналов: штук\n"
-                + $"Среднее число заявок в очереди: штук\n";
+                + $"Среднее время выполнения задания: {Math.Round((this.totalTimeComputingEMC1 + this.totalTimeComputingEMC2 + this.totalTimeCorrectionErr) * 1.0 / this.countTask, 2)} минут\n"
+                + $"Среднее количество задействованых каналов: {Math.Round(this.parallelComputing * 1.0 / ((this.countTask * this.timeComputing + this.countErr * this.timeComputing) / 2.0) * 2.0, 2)} штук\n"
+                + $"Среднее число заявок в очереди: {Math.Round(1.0 * (this.countTask + this.countTaskInQue) / this.totalTimeWorking, 2)} штук/минута\n";
+
             return info;
         }
     }

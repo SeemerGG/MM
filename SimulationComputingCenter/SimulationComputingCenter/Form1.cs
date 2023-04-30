@@ -23,7 +23,7 @@ namespace SimulationComputingCenter
             int timeToNextTask = Convert.ToInt32(textBox1.Text);
             int timeSort = Convert.ToInt32(textBox2.Text);
             int timeErrCorrection = Convert.ToInt32(textBox3.Text);
-            double ErrProbility = Convert.ToDouble(textBox4.Text);
+            int ErrProbility = Convert.ToInt32(textBox4.Text);
             int timeComputing = Convert.ToInt32(textBox5.Text);
             int countTask = Convert.ToInt32(textBox6.Text);
 

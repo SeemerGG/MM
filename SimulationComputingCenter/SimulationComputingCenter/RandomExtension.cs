@@ -8,13 +8,12 @@ namespace SimulationComputingCenter
 {
     public static class RandomExtension
     {
-        public static bool NextBool(this Random rnd, double probility = 0.5)
+        public static bool NextBool(this Random rnd, int probility = 50)
         {
-            probility *= 10;
 
-            bool[] bools = new bool[10];
+            bool[] bools = new bool[100];
 
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < 100; i++)
             {
                 if(i <= probility)
                 {
@@ -26,7 +25,7 @@ namespace SimulationComputingCenter
                 }
             }
 
-            return bools[rnd.Next(0, 10)];
+            return bools[rnd.Next(0, 100)];
         }
     }
 }
