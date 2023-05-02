@@ -16,7 +16,7 @@ namespace SimulationComputingCenter
         int timeWorkingOperator = 0, totalSortTime = 0, totalTimeCorrectionErr = 0, countErr = 0, countTaskInQue = 0;
         int timeCorrectionErrEMC1 = 0, timeCorrectionErrEMC2 = 0, countTaskComputingInEMC1 = 0, countTaskComputingInEMC2 = 0;
         int parallelComputing = 0;
-        double ro, p0, pk;
+        double ro, p0, absolutPr, mediumTimeExcute;
         
 
 
@@ -263,7 +263,8 @@ namespace SimulationComputingCenter
             this.countTaskInQue = countIncomingTasks - this.countTask;
             this.ro = 1.0 * (this.countTaskInQue + this.countTask) / this.countTask;
             this.p0 = Math.Pow(1 + this.ro + Math.Pow(this.ro, 2) / 2 / (2 - this.ro), -1);
-            this.pk = Math.Pow(this.ro, 2) / 2 * this.p0;
+            this.absolutPr = this.countTask * 1.0 / this.totalTimeWorking;
+            this.mediumTimeExcute =1.0 / ((this.totalTimeComputingEMC1 + this.totalTimeComputingEMC2 + this.totalTimeCorrectionErr) * 1.0 / this.countTask);
         }
 
         public string GetStringInfo()
@@ -278,16 +279,16 @@ namespace SimulationComputingCenter
                 //+ $"Время коррекции ошибок оператором: {this.totalTimeCorrectionErr} минут\n"
                 //+ $"Время регистрации и сортировки задач оператором: {this.totalSortTime} минут\n"
                 + $"Количество заданий в очереди: {this.countTaskInQue} штук\n"
-                + $"Пропускная способность: {Math.Round(this.countTask * 1.0 / this.totalTimeWorking, 2)} задач/минута\n"
+                + $"Пропускная способность: {Math.Round(absolutPr, 2)} задач/минута\n"
                 + $"Средние время в очереди: {this.timeSort + Math.Round(this.totalTimeCorrectionErr * 1.0 / this.countTask, 2)} минут\n"
                 + $"Количество ошибок обнаруженных ЭВМ1: {this.timeCorrectionErrEMC1 / this.timeErrCorection} штук\n"
                 + $"Количество ошибок обнаруженных ЭВМ2: {this.timeCorrectionErrEMC2 / this.timeErrCorection} штук\n"
                 + $"Количество задач обработанных ЭВМ1: {this.countTaskComputingInEMC1} штук\n"
                 + $"Количество задач обработанных ЭВМ2: {this.countTaskComputingInEMC2} штук\n"
                 + $"Среднее время выполнения задания: {Math.Round((this.totalTimeComputingEMC1 + this.totalTimeComputingEMC2 + this.totalTimeCorrectionErr) * 1.0 / this.countTask, 2)} минут\n"
-                + $"Среднее количество задействованных каналов: {Math.Round(this.parallelComputing * 1.0 / ((this.countTask * this.timeComputing + this.countErr * this.timeComputing) / 2.0) * 2.0, 2)} штук\n"
-                + $"Среднее число заявок в очереди: {Math.Round(Math.Pow(this.ro, 3) * this.p0 / (4 * Math.Pow((1 - this.ro / 2), 2)), 2)} штук/минута\n"
-                + $"";
+                + $"Среднее количество задействованных каналов: {Math.Round(this.absolutPr / this.mediumTimeExcute, 2)} штук\n"
+                + $"Среднее число заявок в очереди: {Math.Round(Math.Pow(this.ro, 3) * this.p0 / (4 * Math.Pow((1 - this.ro / 2), 2)), 2)} штук/минута\n";
+                //+ $"Среднее количество задействованных каналов:  {this.absolutPr / this.mediumTimeExcute}";
 
 
             return info;
