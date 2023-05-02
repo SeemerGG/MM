@@ -16,6 +16,7 @@ namespace SimulationComputingCenter
         int timeWorkingOperator = 0, totalSortTime = 0, totalTimeCorrectionErr = 0, countErr = 0, countTaskInQue = 0;
         int timeCorrectionErrEMC1 = 0, timeCorrectionErrEMC2 = 0, countTaskComputingInEMC1 = 0, countTaskComputingInEMC2 = 0;
         int parallelComputing = 0;
+        double ro, p0, pk;
         
 
 
@@ -53,6 +54,11 @@ namespace SimulationComputingCenter
 
             do
             {
+                if (EMC1Working && EMC2Working)
+                {
+                    parallelComputing++;
+                }
+
                 if (timeBeforNextTask == 0)
                 {
                     if (countIncomingTasks < this.countTask)
@@ -75,6 +81,15 @@ namespace SimulationComputingCenter
                 {
                     this.totalSortTime += this.timeSort;
                     operatorSorting = false;
+                    //if (rnd.NextBool())
+                    //{
+                    //    queEMC1.Add(0);
+                    //}
+                    //else
+                    //{
+                    //    queEMC2.Add(0);
+                    //}
+
                     if (queEMC1.Count <= queEMC2.Count)
                     {
                         queEMC1.Add(0);
@@ -233,10 +248,10 @@ namespace SimulationComputingCenter
                     timeComputingInECM2--;
                 }
 
-                if (EMC1Working && EMC2Working)
-                {
-                    parallelComputing++;
-                }
+                //if (EMC1Working && EMC2Working)
+                //{
+                //    parallelComputing++;
+                //}
                 
             } while (true);
 
@@ -246,6 +261,9 @@ namespace SimulationComputingCenter
             this.operatorDownTime = this.totalTimeWorking - this.timeWorkingOperator;
             this.countErr = this.totalTimeCorrectionErr / this.timeErrCorection;
             this.countTaskInQue = countIncomingTasks - this.countTask;
+            this.ro = 1.0 * (this.countTaskInQue + this.countTask) / this.countTask;
+            this.p0 = Math.Pow(1 + this.ro + Math.Pow(this.ro, 2) / 2 / (2 - this.ro), -1);
+            this.pk = Math.Pow(this.ro, 2) / 2 * this.p0;
         }
 
         public string GetStringInfo()
@@ -268,7 +286,9 @@ namespace SimulationComputingCenter
                 + $"Количество задач обработанных ЭВМ2: {this.countTaskComputingInEMC2} штук\n"
                 + $"Среднее время выполнения задания: {Math.Round((this.totalTimeComputingEMC1 + this.totalTimeComputingEMC2 + this.totalTimeCorrectionErr) * 1.0 / this.countTask, 2)} минут\n"
                 + $"Среднее количество задействованных каналов: {Math.Round(this.parallelComputing * 1.0 / ((this.countTask * this.timeComputing + this.countErr * this.timeComputing) / 2.0) * 2.0, 2)} штук\n"
-                + $"Среднее число заявок в очереди: {Math.Round(1.0 * (this.countTask + this.countTaskInQue) / this.totalTimeWorking, 2)} штук/минута\n";
+                + $"Среднее число заявок в очереди: {Math.Round(Math.Pow(this.ro, 3) * this.p0 / (4 * Math.Pow((1 - this.ro / 2), 2)), 2)} штук/минута\n"
+                + $"";
+
 
             return info;
         }
