@@ -56,7 +56,7 @@ namespace SimulationComputingCenter
             {
                 if (EMC1Working && EMC2Working)
                 {
-                    parallelComputing++;
+                    this.parallelComputing++;
                 }
 
                 if (timeBeforNextTask == 0)
